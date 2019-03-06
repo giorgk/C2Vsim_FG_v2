@@ -1,7 +1,10 @@
 %% Under octave load the required packages
 pkg load mapping
 %% Paths
+%% UCDAVIS LINUX
 mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
+%% HOME WINDOWS
+mat_data = '..\..\mat_data\';
 %% load node file
 load([mat_data 'C2Vsim_Nodes.mat']);
 %% Write it as shapefile
