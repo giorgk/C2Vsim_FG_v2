@@ -1,6 +1,9 @@
 %
 %% Paths
+%% UCDAVIS LINUX
 mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
+%% HOME WINDOWS
+mat_data = '..\..\mat_data\';
 %% load shapefil
 load([mat_data 'ESR_shapefiles'])
 load([mat_data 'C2Vsim_Elements'],'C2Vsim_elem');
@@ -58,4 +61,23 @@ for ii = 1:length(GROUPS)
     GROUPS(ii,1).LU_group(:,1) = sum(GROUPS(ii,1).LU_area(:,1:2),2);%Native vegetation
     GROUPS(ii,1).LU_group(:,2) = sum(GROUPS(ii,1).LU_area(:,3),2);%Urban
     GROUPS(ii,1).LU_group(:,3) = sum(GROUPS(ii,1).LU_area(:,4:end),2);%Urban
+end
+%% Write data to excel
+load([mat_data 'C2VsimLU_Area'],'UrbanArea');% load to use just the dates
+
+A = ['Time' 'Native & Riparian', 'Urban', 'Agricultural' NVfield_names Urbfield_names Pondfield_names NonPondfield_names];
+for ii = 1:94
+    A{ii+1,1} = UrbanArea.time{ii};
+end
+for ii = 1:length(GROUPS)
+    for jj = 1:94
+        for kk = 1:3
+            A{jj+1,kk+1} = GROUPS(ii,1).LU_group(jj,kk);
+        end
+        
+        for kk = 1:28
+            A{jj+1,kk+4} = GROUPS(ii,1).LU_area(jj,kk);
+        end
+    end
+    xlswrite('KernSubregionsData.xlsx',A,GROUPS(ii,1).name,'A1');
 end
