@@ -30,7 +30,7 @@ A{2,1} = 'Time';
 for ii = 1:length(GROUPS)
     A{2,ii+1} = GROUPS(ii,1).name;
     for jj = 1:length(GROUPS(ii,1).Precip)
-        if ii == 1;
+        if ii == 1
             A{2+jj,1} = PRC.time{jj,1};
         end
         A{2+jj,ii+1} = GROUPS(ii,1).Precip(jj,1);

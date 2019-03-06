@@ -14,4 +14,4 @@ To keep the size of the repo small there are a number of hidden folders that are
 
 - **C2VSimFG-BETA_PublicRelease**  This is the C2Vsim model folder. Download the model from the [site](https://data.cnra.ca.gov/dataset/c2vsimfg-beta-model).
 
-- **mat_data** This folder will store data from the model in matlab format. Just Create this empty folder. The data fof this folder can be generated from the various scripts. Alternatively can be downloaded from the google folder.
+- **mat_data** This folder will store data from the model in matlab format. Just Create this empty folder. The data fof this folder can be generated from the various scripts. Alternatively can be downloaded from the [google folder](https://drive.google.com/drive/folders/1ltD_cB2XW-1gkDfGVaulCq8XgwO9RlpY).
