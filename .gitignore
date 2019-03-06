@@ -9,8 +9,8 @@
 # add some of the houdini related files
 !/hou_data
 /hou_data/*
-/hou_data/*.hipnc
+!/hou_data/*.hipnc
 # add the gis folder
-/gis_data
+!/gis_data
 # add the ERS project folder
-/ERS_proj
+!/ERS_proj
