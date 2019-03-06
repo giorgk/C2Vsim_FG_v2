@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20190221</CreaDate><CreaTime>07163500</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="d:\arcgis\desktop10.5\ArcToolbox\Toolboxes\Data Management Tools.tbx\Dissolve" Date="20190221" Time="071635">Dissolve KernSubregions M:\CEB\SWallander\Active\AquiferRecharge2018\Data\KernDistricts\KernDissolve.shp KernDistricts2.csv.Subregion # MULTI_PART DISSOLVE_LINES</Process></lineage></DataProperties></Esri></metadata>

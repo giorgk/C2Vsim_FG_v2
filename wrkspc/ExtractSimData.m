@@ -1,15 +1,16 @@
-%% Paths
-c2vsim_path = '..\c2vsimfg-betapublicrelease\C2VSimFG-BETA_PublicRelease\';
-gis_data = '..\gis_data\';
-mat_data = '..\mat_data\';
-%
+%% relative Paths
+gis_data = ['..' filesep 'gis_data' filesep];
+%% Paths at UCDAVIS LINUX
+c2vsim_path = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/C2VSimFG-BETA_PublicRelease/';
+mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
+
 %% Precipitation
-PRC = readC2VsimPrecip([c2vsim_path 'Simulation\C2VSimFG_Precip.dat']);
+PRC = readC2VsimPrecip([c2vsim_path 'Simulation' filesep 'C2VSimFG_Precip.dat']);
 save([mat_data 'PrecipTimeSeries'],'PRC');
 %% Read Root zone parameters. They are defined per element
 load([mat_data 'C2Vsim_Elements.mat']);
 load([mat_data 'PrecipTimeSeries.mat']);
-fid = fopen([c2vsim_path 'Simulation\RootZone\C2VSimFG_RootZone.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_RootZone.dat'],'r');
 temp = textscan(fid, '%f %f %f %f %f %f %f %f %f %f %f %f %f %f', 32537, 'HeaderLines',191);
 fclose(fid);
 for ii = 1:length(temp{1,1})
@@ -47,10 +48,10 @@ Urbfield_names = {'ALANDU'};
 Pondfield_names = {'ALANDRI_FL','ALANDRI_NFL','ALANDRI_NDC','ALANDRF_SL','ALANDRF_PR'};
 NonPondfield_names = {'GR','CO','SB','CN','DB','SA','FL','AL','PA','TP','TF','CU','OG','PO','TR','AP','OR','CS','VI','ID'};
 %%
-NativeVegArea = LU_Area_per_element([c2vsim_path 'Simulation\RootZone\C2VSimFG_NativeVeg_Area.dat'], 32537, NVfield_names, 104);
-PondedCropArea = LU_Area_per_element([c2vsim_path 'Simulation\RootZone\C2VSimFG_PondedCrop_Area.dat'], 32537, Pondfield_names, 111);
-UrbanArea = LU_Area_per_element([c2vsim_path 'Simulation\RootZone\C2VSimFG_Urban_Area.dat'], 32537, Urbfield_names, 101);
-NonPondedCropArea = LU_Area_per_element([c2vsim_path 'Simulation\RootZone\C2VSimFG_NonPondedCrop_Area.dat'], 32537, NonPondfield_names, 126);
+NativeVegArea = LU_Area_per_element([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_NativeVeg_Area.dat'], 32537, NVfield_names, 104);
+PondedCropArea = LU_Area_per_element([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_PondedCrop_Area.dat'], 32537, Pondfield_names, 111);
+UrbanArea = LU_Area_per_element([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_Urban_Area.dat'], 32537, Urbfield_names, 101);
+NonPondedCropArea = LU_Area_per_element([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_NonPondedCrop_Area.dat'], 32537, NonPondfield_names, 126);
 save([mat_data 'C2VsimLU_Area'],'NativeVegArea','PondedCropArea','UrbanArea','NonPondedCropArea');
 %
 %% Aggregate Land use data per elements
@@ -88,7 +89,7 @@ end
 % load Element file
 load([mat_data 'C2Vsim_Elements.mat']);
 %% read the ET data
-fid = fopen([c2vsim_path 'Simulation\C2VSimFG_ET.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'C2VSimFG_ET.dat'],'r');
 for ii = 1:136
     temp = fgetl(fid);
 end
@@ -105,7 +106,7 @@ end
 
 fclose(fid);
 %% Non Ponded Crops
-fid = fopen([c2vsim_path 'Simulation\RootZone\C2VSimFG_NonPondedCrop.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_NonPondedCrop.dat'],'r');
 % read all comments up to the line with the crop codes
 for ii = 1:32767
     temp = fgetl(fid);
@@ -126,7 +127,7 @@ for ii = 1:length(C2Vsim_elem)
     end
 end
 %% Ponded Crops
-fid = fopen([c2vsim_path 'Simulation\RootZone\C2VSimFG_PondedCrop.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_PondedCrop.dat'],'r');
 for ii = 1:32702
     temp = fgetl(fid);
 end
@@ -146,7 +147,7 @@ for ii = 1:length(C2Vsim_elem)
     end
 end
 %% Native Vegetation
-fid = fopen([c2vsim_path 'Simulation\RootZone\C2VSimFG_NativeVeg.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_NativeVeg.dat'],'r');
 for ii = 1:102
     temp = fgetl(fid);
 end
@@ -169,7 +170,7 @@ for ii = 1:length(C2Vsim_elem)
     end
 end
 %% Urban 
-fid = fopen([c2vsim_path 'Simulation\RootZone\C2VSimFG_Urban.dat'],'r');
+fid = fopen([c2vsim_path 'Simulation' filesep 'RootZone' filesep 'C2VSimFG_Urban.dat'],'r');
 for ii = 1:126
     temp = fgetl(fid);
 end
