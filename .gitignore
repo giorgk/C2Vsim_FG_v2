@@ -1,0 +1,16 @@
+# ignore everything
+/*
+!.gitignore
+!roadmap-to-running-c2vsim.pdf
+# add the m files from the wrksp directory
+!/wrkspc
+/wrkspc/*
+!/wrkspc/*.m
+# add some of the houdini related files
+!/hou_data
+/hou_data/*
+/hou_data/*.hipnc
+# add the gis folder
+/gis_data
+# add the ERS project folder
+/ERS_proj
