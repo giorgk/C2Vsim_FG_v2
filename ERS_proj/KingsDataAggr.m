@@ -1,29 +1,33 @@
 %% read the grouping from the csv file
-%
-load('KingsSubregions');
+% KingsSubregionsTable is the KingsSubregions.csv file read as matlabe
+% table.
+load('KingsSubregionsTable');
 %% unique groups
-temp = unique(Subregion);
+temp = categories(KingsSubregions.Subregion);
 %% find the element ids for each group
 for ii = 1:length(temp)
    GROUPS(ii,1).name = deblank(temp{ii,1});
-   GROUPS(ii,1).EL_ID = [];
-   for jj = 1:length(Subregion)
-       if strcmp(deblank(Subregion{jj,1}), GROUPS(ii,1).name)
-           GROUPS(ii,1).EL_ID = [GROUPS(ii,1).EL_ID; ElementID(jj,1)];
-       end
-   end
+   GROUPS(ii,1).EL_ID = KingsSubregions.ElementID(KingsSubregions.Subregion == temp{ii,1});
 end
 %% Append precipitation
-load('F:\UCDAVIS\C2VSIM_FG_OR\mat_data\PrecipTimeSeries.mat')
-load('F:\UCDAVIS\C2VSIM_FG_OR\mat_data\C2Vsim_Elements_RTZ_Precip.mat')
+% Highlight the appropriate line and run with F9. The data in this folder
+% exist in the team drive
+Bdata_path = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/';
+%%
+load([Bdata_path 'mat_data' filesep 'C2Vsim_Elements_RTZ_Precip.mat'])
+% Unit of rainfall rate = INCHES/MONTH
 for ii = 1:length(GROUPS)
     Precip = zeros(1131,1);
+    weights = zeros(length(GROUPS(ii,1).EL_ID),1);
     for jj = 1:length(GROUPS(ii,1).EL_ID)
-        Precip = Precip + C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).RTZ.Precip;
+        weights(jj,1) = polyarea(C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).X,C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).Y);
+        Precip = Precip + C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).RTZ.Precip * weights(jj,1);
     end
-    GROUPS(ii,1).Precip = Precip;
+    GROUPS(ii,1).Precip = Precip/sum(weights);
 end
 %% Write precipitation to excel spreadsheet
+% load precipitation data just for the time
+load([Bdata_path 'mat_data' filesep 'PrecipTimeSeries.mat'])
 clear A
 A{1,1} = 'Precipitation [INCH/MONTH]';
 A{2,1} = 'Time';
@@ -37,6 +41,11 @@ for ii = 1:length(GROUPS)
     end
 end
 [status,message] = xlswrite('KingsSubregionsData.xlsx',A,'Precipitation','A1');
+%% 
+% In ubuntu the above command didnt work. I'll save this variable and try
+% from windows
+Aprecip = A;
+save('Data4excelWrite','Aprecip');
 %%
 load('F:\UCDAVIS\C2VSIM_FG_OR\mat_data\C2Vsim_elem_LUarea.mat');
 for ii = 1:length(GROUPS)

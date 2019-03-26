@@ -1,6 +1,8 @@
 %% paths
 mat_data = '..\mat_data\';
 hou_data = '..\hou_data\';
+mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
+hou_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/hou_data/';
 %% print the nodes with elevations and the mesh
 load([mat_data 'C2Vsim_Nodes.mat']);
 load([mat_data 'C2Vsim_Elements.mat']);
@@ -49,3 +51,45 @@ for ii = 1:size(C2Vsim_elem_LUarea(1,1).LUArea,1)
     fprintf(fid, '%d %.5f %.5f %.5f\n', AA');
     fclose(fid);
 end
+%% load hydraulic head data
+load([mat_data 'C2VsimHead.mat']);
+for ii = 1:size(C2VsimHead,1)
+    ii
+   fid = fopen([hou_data 'waterTable/lay1_' num2str(ii, '%04d') '.dat'],'w'); 
+   fprintf(fid, '%f\n', C2VsimHead{ii,2}(:,1).*0.3048);
+   fclose(fid);
+end
+%% Deep percolation
+% Read Deep percolation first then write it to houdini
+yy = 1973;
+mm = 9;
+for ii = 1:505
+    ii
+    if ii == 1
+        DP = zeros(size(DeepPerc,2),1);
+    else
+        DP = DeepPerc(ii-1,:)*1233.48/eomday(yy, mm);  %ACFT-> *1233.48 m^3 / days -> m^3/day
+    end
+    
+   fid = fopen([hou_data 'DeepPerc/DeepPerc_' num2str(ii, '%04d') '.dat'],'w'); 
+   fprintf(fid, '%f\n', DP);
+   fclose(fid);
+   mm = mm +1;
+   if mm > 12
+       yy = yy + 1;
+       mm = 1;
+   end
+end
+%% Write time file
+yy = 1973;
+mm = 9;
+fid = fopen([hou_data 'TimeInfo.dat'],'w');
+for ii = 1:505
+    fprintf(fid, '%d/%d\n',[mm yy]);
+    mm = mm +1;
+   if mm > 12
+       yy = yy + 1;
+       mm = 1;
+   end
+end
+fclose(fid);
