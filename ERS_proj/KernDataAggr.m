@@ -1,9 +1,8 @@
 %
 %% Paths
-%% UCDAVIS LINUX
-mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
-%% HOME WINDOWS
-mat_data = '..\..\mat_data\';
+Bdata_path = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/'; % UCD Ubuntu
+Bdata_path = 'D:\giorgk\Documents\C2Vsim_FG_v2\'; % UCD windows
+mat_data = [Bdata_path 'mat_data' filesep];
 %% load shapefil
 load([mat_data 'ESR_shapefiles'])
 load([mat_data 'C2Vsim_Elements'],'C2Vsim_elem');
@@ -31,10 +30,12 @@ load([mat_data 'PrecipTimeSeries.mat'])
 load([mat_data 'C2Vsim_Elements_RTZ_Precip.mat'])
 for ii = 1:length(GROUPS)
     Precip = zeros(1131,1);
+    weights = zeros(length(GROUPS(ii,1).EL_ID),1);
     for jj = 1:length(GROUPS(ii,1).EL_ID)
-        Precip = Precip + C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).RTZ.Precip;
+        weights(jj,1) = polyarea(C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).X, C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).Y);
+        Precip = Precip + C2Vsim_elem(GROUPS(ii,1).EL_ID(jj,1),1).RTZ.Precip * weights(jj,1);
     end
-    GROUPS(ii,1).Precip = Precip;
+    GROUPS(ii,1).Precip = Precip/sum(weights);
 end
 %% Write precipitation to excel spreadsheet
 clear A
