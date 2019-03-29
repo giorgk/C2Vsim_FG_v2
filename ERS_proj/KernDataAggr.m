@@ -202,6 +202,6 @@ for ii = 1:length(GROUPS)
         A{jj+1,5} = GROUPS(ii,1).Rice(jj);
         A{jj+1,6} = GROUPS(ii,1).Urban(jj);
     end
-    xlswrite('KingsOutputPET.xlsx', A, GROUPS(ii,1).name, 'A1');
+    xlswrite('KernOutputPET.xlsx', A, GROUPS(ii,1).name, 'A1');
 end
 
