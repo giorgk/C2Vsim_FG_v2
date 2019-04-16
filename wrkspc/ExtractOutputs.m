@@ -83,6 +83,11 @@ end
 % dee percolation - is all zeros
 DeepPerc = h5read(GBinfo.Filename, ...
     [GBinfo.Groups(2).Name GBinfo.Name GBinfo.Groups(2).Datasets(5).Name])';
+
+%% Vertical Flows
+% dee percolation - is all zeros
+VertFlows = h5read(GBinfo.Filename, ...
+    [GBinfo.Groups(4).Name GBinfo.Name GBinfo.Groups(4).Datasets(27).Name])';
     
 
 
