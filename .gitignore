@@ -14,3 +14,5 @@
 !/gis_data
 # add the ERS project folder
 !/ERS_proj
+# add the R workspace
+!/Rwrkspc
