@@ -16,3 +16,5 @@
 !/ERS_proj
 # add the R workspace
 !/Rwrkspc
+/Rwrkspc/*.h5
+/Rwrkspc/*.hdf
