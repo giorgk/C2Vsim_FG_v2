@@ -115,6 +115,6 @@ for (i in 1:length(selectTimes)) {
 }
 
 
-write.csv(vf, file = "VertflowData.csv")
-write.csv(hf, file = "horflowData.csv")
+write.csv(vf, file = "VERTflowData.csv")
+write.csv(hf, file = "HORIZflowData.csv")
 
