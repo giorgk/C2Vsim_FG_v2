@@ -19,3 +19,4 @@
 /Rwrkspc/*.h5
 /Rwrkspc/*.hdf
 /Rwrkspc/.Rhistory
+!/Rwrkspc/*.csv
