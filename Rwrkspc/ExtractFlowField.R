@@ -1,5 +1,6 @@
 library(h5)
 library(pracma)
+library(xlsx)
 
 # This script is used to extract and the flow field from any month
 # Before useing this script you have to run the PreprocInputs and PreprocOutputs scripts to generate the
@@ -57,10 +58,63 @@ ln <- sqrt(dx^2 + dy^2)
 nrmls[inner_fc,3] <- dx/ln 
 nrmls[inner_fc,4] <- dy/ln
 
+hFI <- hpart["/geodata/FI"]
+FI = matrix(nrow = dim(hFI)[1], ncol = dim(hFI)[2])
+for (i in 1:dim(hFI)[2]) {
+  FI[,i] = hFI[,i]
+}
+
+
 # For the outer faces use a loop
+for (i in 1:length(outer_fc)) {
+  # Find the element and the outer face index 
+  iel <- which(abs(FI) == outer_fc[i], arr.ind = TRUE )
+  if (dim(iel)[1] > 1){
+    print("More than one elements are found")
+  }
+    
+  a <- XY[MSH[iel[1],iel[2]][1],]
+  if (MSH[iel[1],iel[2]+1][1] == 0 || iel[2] == 4){
+    b <- XY[MSH[iel[1], 1][1],]
+  }else{
+    b <- XY[MSH[iel[1],iel[2]][1],]
+  }
+  c <- (a+b)/2
+  nrmls[outer_fc[i],1:2] <- c
+  
+  ccel <- cc[iel[1],]
+  
+  # if the index is negative then the flow comes from outer to inside of element
+  
+  if (FI[iel] < 0){
+    nn <- ccel - c
+  }else{
+    nn <- c - ccel
+  }
+  
+  nn <- nn/sqrt(sum(nn^2))
+  nrmls[outer_fc[i],3:4] <- nn
+}
+
+vflow <- hpart["flowdata/VFLOW"]
+hflow <- hpart["flowdata/HFLOW"]
+
+vf <- data.frame("CX" = cc[,1])
+vf["CY"] <- cc[,2]
+for (i in 1:length(selectTimes)) {
+  vf[as.character(simTime[selectTimes[i]])] <- vflow[,selectTimes[i],1]
+}
 
 
+hf <- data.frame("CX" = nrmls[,1])
+hf["CY"] <- nrmls[,2]
+hf["NX"] <- nrmls[,3]
+hf["NY"] <- nrmls[,4]
+for (i in 1:length(selectTimes)) {
+  hf[as.character(simTime[selectTimes[i]])] <- hflow[,selectTimes[i],1]
+}
 
 
-
+write.csv(vf, file = "VertflowData.csv")
+write.csv(hf, file = "horflowData.csv")
 
