@@ -10,4 +10,4 @@ The file FaceData.RData is created from the PreprocesInputs.R script and contain
 The PreprocOutputs.R script is used to extract the flow values and convert the flow volume to rates.
 At the end it writes an PartTrackData.h5 file with all the required information by the particle tracking algorithm.
 
-Last the ExtractFlowField.R extracts the vertical nad horisontal flow field for selected months and prints the output to csv files
+Last the ExtractFlowField.R extracts the vertical and horizontal flow field for selected months and prints the output to csv files
