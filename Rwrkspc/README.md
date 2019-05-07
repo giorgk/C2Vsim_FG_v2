@@ -11,3 +11,6 @@ The PreprocOutputs.R script is used to extract the flow values and convert the f
 At the end it writes an PartTrackData.h5 file with all the required information by the particle tracking algorithm.
 
 Last the ExtractFlowField.R extracts the vertical and horizontal flow field for selected months and prints the output to csv files
+
+-------------------------------------------------
+The ExtractInputData.R contains code snippets that extract raw input data from the model
