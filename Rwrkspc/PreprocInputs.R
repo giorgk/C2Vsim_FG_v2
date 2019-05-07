@@ -20,6 +20,9 @@ XY <- read.table(file = paste0(preproc_path, "C2VSimFG_Nodes.dat"),
 # plot(XY$X,XY$Y)
 
 ## Read stratigraphy file
+# GSE is the Ground Surface Elevation
+# A columns contain the thicknes of aquicludes
+# L columns contain the thicknes of main layers 
 NlinesSkip <- 105
 strat <- read.table(file = paste0(preproc_path, "C2VSimFG_Stratigraphy.dat"),
                     header = FALSE, sep = "", skip = NlinesSkip, nrows = nNodes,
@@ -28,16 +31,18 @@ strat <- read.table(file = paste0(preproc_path, "C2VSimFG_Stratigraphy.dat"),
 
 # Convert feet to meter
 strat[-1] <- strat[-1] * 0.3048
+# For each of the 4 layers add the thickness of aquiclude to the layer
 for(i in 1:4){
   strat[[ paste0("L", as.character(i))]] <- strat[[ paste0("L", as.character(i))]] + strat[[ paste0("A", as.character(i))]]
 }
-# Keep only the layer thicknesses
+#Delete the aquicludes and Keep only the layer thicknesses
 strat$A1 <- NULL
 strat$A2 <- NULL
 strat$A3 <- NULL
 strat$A4 <- NULL
-strat$L1 = strat$GSE - strat$L1
-strat$L2 = strat$L1 - strat$L2
+# Subtract the thickness from the surface to obtain the elevation of the bottom of the first layer
+strat$L1 = strat$GSE - strat$L1 
+strat$L2 = strat$L1 - strat$L2 
 strat$L3 = strat$L2 - strat$L3
 strat$L4 = strat$L3 - strat$L4
 
