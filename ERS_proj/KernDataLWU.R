@@ -1,6 +1,7 @@
 library(h5)
 library(sf)
 library(pracma)
+library(xlsx)
 
 # Paths
 script_path = "F:/UCDAVIS/C2VSIM_FG_OR/C2Vsim_FG_v2/ERS_proj/"
@@ -8,6 +9,7 @@ c2vsim_path <- "f:/UCDAVIS/C2VSIM_FG_OR/C2Vsim_FG_v2/C2VSimFG-BETA_PublicRelease
 
 results_path <- paste0(c2vsim_path, "Results/")
 preproc_path <- paste0(c2vsim_path, "Preprocessor/")
+setwd(script_path)
 
 # Read the Kern subregions
 kern <- read_sf(paste0(script_path, "gis_data/Kern_only.shp"))
@@ -56,28 +58,47 @@ hfileDataSets <- list.datasets(LWU_BDGinfo)
 
 # Read data and aggregate per Kern region
 data_ids <- 15:53
-agg_data <- matrix(data = NA, nrow = dim(kern)[1], ncol = length(data_ids))
+#agg_data <- matrix(data = NA, nrow = dim(kern)[1], ncol = length(data_ids))
+agg_vec <- array(data = NA, dim = c(504, length(data_ids), dim(kern)[1] ))
 for (i in 1:length(data_ids)) {
   temp <- LWU_BDGinfo[hfileDataSets[data_ids[i]]]
   if (dim(temp)[2] == 0)
     next
   
-  temp_mat <- matrix(data = NA, nrow = dim(temp)[2], ncol = dim(temp)[1])
-  for (j in 1:dim(temp)[1]) {
-    temp_mat[,j] <- temp[j,]
+  for (j in 1:dim(kern)[1]){
+    agg_vec[,i,j] <- apply(temp[,kern_elems[[j]]],1,sum)
   }
   
+  #temp_mat <- matrix(data = NA, nrow = dim(temp)[2], ncol = dim(temp)[1])
+  #for (j in 1:dim(temp)[1]) {
+  #  temp_mat[,j] <- temp[j,]
+  #}
   
-  for (j in 1:dim(kern)[1]) {
-    agg_data[j,i] <- sum(temp_mat[kern_elems[[j]],])
-    
-  }
+  
+  #for (j in 1:dim(kern)[1]) {
+  #  agg_data[j,i] <- sum(temp_mat[kern_elems[[j]],])
+  #}
 }
 
-# convert data to data frame and write them to excel
-agg_df <- data.frame(agg_data, row.names = kern$KernDistri)
+agg_data <- matrix(data = NA, nrow = 504/12, ncol = length(data_ids))
+agg_df <- data.frame(agg_data, row.names = 1973:2014)
 for (i in 1:length(data_ids)) {
   names(agg_df)[names(agg_df) == paste0("X", as.character(i))] <- strsplit(hfileDataSets[data_ids[i]], split = '/')[[1]][3]
 }
 
-write.csv(agg_df, file = paste0(script_path, "KernLWU.csv"))
+for (i in 1:dim(kern)[1]){
+  for (j in 1:length(data_ids))
+    agg_df[,j] <- apply(array(agg_vec[,j,i], c(12,504/12)),2,mean)
+  if (i == 1)
+    write.xlsx(x = agg_df, file = "KernAnnualAvLWU.xlsx", sheetName = kern$KernDistri[i], append = FALSE)
+  else
+    write.xlsx(x = agg_df, file = "KernAnnualAvLWU.xlsx", sheetName = kern$KernDistri[i], append = TRUE)
+}
+
+## convert data to data frame and write them to excel
+#agg_df <- data.frame(agg_data, row.names = kern$KernDistri)
+#for (i in 1:length(data_ids)) {
+#  names(agg_df)[names(agg_df) == paste0("X", as.character(i))] <- strsplit(hfileDataSets[data_ids[i]], split = '/')[[1]][3]
+#}
+#
+#write.csv(agg_df, file = paste0(script_path, "KernLWU.csv"))

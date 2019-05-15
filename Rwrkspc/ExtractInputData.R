@@ -18,3 +18,14 @@ for (i in 1:3) {
   KZ[,1+i] <- Ktemp$PV[seq(from = 1, to = 30179*4, by = 4)+i]
 }
 
+## Create a point shapefile with the hydraulic conductivity properties
+## Read the C2Vsim node file
+NlinesSkip <- 90
+nNodes <- 30179
+XY <- read.table(file = paste0(c2vsim_path, "Preprocessor/C2VSimFG_Nodes.dat"),
+                 header = FALSE, sep = "", skip = NlinesSkip, nrows = nNodes,
+                 quote = "",fill = TRUE,
+                 col.names = c("ID", "X", "Y"))
+
+S <- SpatialPointsDataFrame(coords = XY[,2:3], data = Ktemp[seq(from = 1, to = 30179*4, by = 4),])
+writeOGR(obj = S, dsn = "f:/UCDAVIS/C2VSIM_FG_OR/C2Vsim_FG_v2/gis_data", layer = "Klay1", driver = "ESRI Shapefile")
