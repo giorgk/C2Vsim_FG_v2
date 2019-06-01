@@ -10,6 +10,8 @@ c2vsim_path <- "f:/UCDAVIS/C2VSIM_FG_OR/C2Vsim_FG_v2/C2VSimFG-BETA_PublicRelease
 results_path <- paste0(c2vsim_path, "Results/")
 preproc_path <- paste0(c2vsim_path, "Preprocessor/")
 setwd(script_path)
+NtimeSteps <- 504
+Nyears <- NtimeSteps/12
 
 # Read the Kern subregions
 kern <- read_sf(paste0(script_path, "gis_data/Kern_only.shp"))
@@ -48,7 +50,7 @@ for (i in 1:dim(kern)[1]) {
 }
 
 # Simulation Time series
-simTime <- seq.Date(from = as.Date("1973/10/30"),to = as.Date("2015/09/30"),by = "month")
+#simTime <- seq.Date(from = as.Date("1973/10/30"),to = as.Date("2015/09/30"),by = "month")
 
 
 # Read L&WU Budget file
@@ -59,14 +61,38 @@ hfileDataSets <- list.datasets(LWU_BDGinfo)
 # Read data and aggregate per Kern region
 data_ids <- 15:53
 #agg_data <- matrix(data = NA, nrow = dim(kern)[1], ncol = length(data_ids))
-agg_vec <- array(data = NA, dim = c(504, length(data_ids), dim(kern)[1] ))
+agg_vec <- array(data = NA, dim = c(Nyears, length(data_ids), dim(kern)[1] ))
+
+
 for (i in 1:length(data_ids)) {
   temp <- LWU_BDGinfo[hfileDataSets[data_ids[i]]]
   if (dim(temp)[2] == 0)
     next
   
+  splited_string <- strsplit(hfileDataSets[data_ids[i]], split = ' ')[[1]]
+  
+  
   for (j in 1:dim(kern)[1]){
-    agg_vec[,i,j] <- apply(temp[,kern_elems[[j]]],1,sum)
+    el_ids <- kern_elems[[j]] # In this script el_ids are the actual number of element ids
+    #Extract the data for the subregion only [Ntimes X Nelem]
+    subregData <- temp[,el_ids]
+    # For each element average the values per water year
+    YearlySubregData <- matrix(data = NA, nrow = Nyears, ncol = dim(subregData)[2])
+    for (k in 1:Nyears) {
+      ks <- 1+(k-1)*12
+      ke <- k*12
+      if (length(el_ids) == 1)
+        YearlySubregData[k,] <- mean(subregData[ks:ke])
+      else 
+        YearlySubregData[k,] <- apply(subregData[ks:ke,],2,mean)
+    }
+    
+    if (splited_string[length(splited_string)] == "Area"){
+      agg_vec[,i,j] <- apply(YearlySubregData, 1, sum)
+    }
+    else{
+      agg_vec[,i,j] <- apply(YearlySubregData, 1, mean)
+    }
   }
   
   #temp_mat <- matrix(data = NA, nrow = dim(temp)[2], ncol = dim(temp)[1])
@@ -80,15 +106,14 @@ for (i in 1:length(data_ids)) {
   #}
 }
 
-agg_data <- matrix(data = NA, nrow = 504/12, ncol = length(data_ids))
-agg_df <- data.frame(agg_data, row.names = 1973:2014)
+agg_data <- matrix(data = NA, nrow = Nyears, ncol = length(data_ids))
+agg_df <- data.frame(agg_data, row.names = 1974:2015)
 for (i in 1:length(data_ids)) {
   names(agg_df)[names(agg_df) == paste0("X", as.character(i))] <- strsplit(hfileDataSets[data_ids[i]], split = '/')[[1]][3]
 }
 
 for (i in 1:dim(kern)[1]){
-  for (j in 1:length(data_ids))
-    agg_df[,j] <- apply(array(agg_vec[,j,i], c(12,504/12)),2,mean)
+    agg_df[,] <- agg_vec[,,i]
   if (i == 1)
     write.xlsx(x = agg_df, file = "KernAnnualAvLWU.xlsx", sheetName = kern$KernDistri[i], append = FALSE)
   else
