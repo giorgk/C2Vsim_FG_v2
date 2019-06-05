@@ -135,7 +135,7 @@ N1x = @(x)x; N1y = @(x)x-1; % Bottom edge
 N2x = @(x) sqrt(2)*x; N2y = @(x)sqrt(2)*x; %diagonal edge
 N3x = @(x)x-1; N3y = @(x)x; % left edge
 %%
-a = -1; b = -1; c = -1;
+a = 1; b = 0; c = -1;
 xyv = [];
 for ix = 0:0.05:1
     for iy = 0:0.05:1
