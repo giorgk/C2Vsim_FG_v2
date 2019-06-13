@@ -135,7 +135,8 @@ N1x = @(x)x; N1y = @(x)x-1; % Bottom edge
 N2x = @(x) sqrt(2)*x; N2y = @(x)sqrt(2)*x; %diagonal edge
 N3x = @(x)x-1; N3y = @(x)x; % left edge
 %%
-a = 1; b = 0; c = -1;
+a = 0.2557211; b = -0.1561293; c = -0.04744832;
+a = 0.3615364; b =  -0.2659625; c = -0.006270633;
 xyv = [];
 for ix = 0:0.05:1
     for iy = 0:0.05:1
@@ -150,8 +151,8 @@ clf
 plot(ref_tria([1 2 3 1],1), ref_tria([1 2 3 1],2),'b')
 hold on
 for ii = 1:size(xyv,1)
-    px = xyv(ii,1) + xyv(ii,3)*0.015;
-    py = xyv(ii,2) + xyv(ii,4)*0.015;
+    px = xyv(ii,1) + xyv(ii,3)*0.05;
+    py = xyv(ii,2) + xyv(ii,4)*0.05;
     plot([xyv(ii,1) px],[xyv(ii,2) py],'r')
 end
 axis equal
@@ -164,6 +165,7 @@ N4x = @(x)1-x; N4y = @(x)0; % Left face
 %%
 a = 1; b = 5; c = 1; d = 1;
 a = -19491.29434; b = 15202.0322; c = 0; d = -21030.3737;
+a = 0.2659625; b = 0.1760972; c = -0.3749663; d = -0.1258288;
 %a = -1+2*rand; b = -1+2*rand; c = -1+2*rand; d = -1+2*rand;
 xyv = [];
 for ix = 0:0.05:1
@@ -177,8 +179,8 @@ clf
 plot(ref_quad([1 2 3 4 1],1), ref_quad([1 2 3 4 1],2),'b')
 hold on
 for ii = 1:size(xyv,1)
-    px = xyv(ii,1) + xyv(ii,3)*0.0000015;
-    py = xyv(ii,2) + xyv(ii,4)*0.0000015;
+    px = xyv(ii,1) + xyv(ii,3)*0.15;
+    py = xyv(ii,2) + xyv(ii,4)*0.15;
     plot([xyv(ii,1) px],[xyv(ii,2) py],'r')
 end
 axis equal
