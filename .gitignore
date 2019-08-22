@@ -19,3 +19,7 @@
 /Rwrkspc/*.h5
 /Rwrkspc/*.hdf
 !/Rwrkspc/*.csv
+# add the NFS Liam project folder
+!/NSF_Liam
+/NSF_Liam/*.asv
+/NSF_Liam/.Rhistory

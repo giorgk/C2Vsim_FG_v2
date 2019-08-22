@@ -1,6 +1,7 @@
 %% Extract data
 %% relative Paths
 gis_data = ['..' filesep 'gis_data' filesep];
+c2vsim_path = ['..' filesep 'C2VSimFG-BETA_PublicRelease' filesep];
 %% Paths at UCDAVIS LINUX
 c2vsim_path = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/C2VSimFG-BETA_PublicRelease/';
 mat_data = '/media/giorgk/DATA/giorgk/Documents/C2Vsim_FG_v2/mat_data/';
