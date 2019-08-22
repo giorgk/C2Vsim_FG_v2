@@ -5,7 +5,7 @@ Water levels
 -----------
 
 The matlab script **ExtractDataLiam.m** is used to extract the water levels.
-The results are written in the **PLSSLiam.dat** in the folowing format:
+The results are written in the **WaterLevelPLSSLiam.dat** in the folowing format:
 ```
 CODE X1 Y1 X2 Y2 H1 H2 ... H505
 ```

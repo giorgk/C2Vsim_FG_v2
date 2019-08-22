@@ -54,7 +54,7 @@ for ii = 1:size(waterLevel,2) + 4
 end
 frmt = [frmt '\n'];
 
-fid = fopen('PLSSLiam.dat', 'w');
+fid = fopen('WaterLevelPLSSLiam.dat', 'w');
 for ii = 1:size(waterLevel,1)
     fprintf(fid, frmt, plss(ii,1).CO_MTRS, [plss(ii,1).X1 plss(ii,1).Y1 plss(ii,1).X plss(ii,1).Y waterLevel(ii,:)]);
 end
