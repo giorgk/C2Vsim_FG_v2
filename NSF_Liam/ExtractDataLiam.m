@@ -1,3 +1,4 @@
+%{
 %% Groundwater levels
 % For the groundwater levels use the following line to read the HeadAll.out
 % file. The name of this file is specified under the
@@ -59,5 +60,63 @@ for ii = 1:size(waterLevel,1)
     fprintf(fid, frmt, plss(ii,1).CO_MTRS, [plss(ii,1).X1 plss(ii,1).Y1 plss(ii,1).X plss(ii,1).Y waterLevel(ii,:)]);
 end
 fclose(fid);
+%}
+%% Groundwater Pumping
+GBinfo = h5info('..\C2VSimFG-BETA_PublicRelease\Results\C2VSimFG_GW_ZBudget.hdf');
+PumpElem = h5read(GBinfo.Filename, ...
+    [GBinfo.Groups(2).Name GBinfo.Name GBinfo.Groups(2).Datasets(13).Name])';
+PumpWell = h5read(GBinfo.Filename, ...
+    [GBinfo.Groups(2).Name GBinfo.Name GBinfo.Groups(2).Datasets(14).Name])';
 
+ND = shaperead('..\gis_data\C2Vsim_Nodes');
+p = [[ND.X]',[ND.Y]'];
+% load the C2Vsim Mesh elements by running the Read Elements section of the
+% ExtractData.m script
+% Calculate element barycenters
+for ii = 1:size(MSH,1)
+    n = 4;
+    if MSH(ii,4) == 0
+        n = 3;
+    end
+    elcc(ii,:) = [mean(p(MSH(ii,1:n),1)) mean(p(MSH(ii,1:n),2))];
+end
+
+plss = shaperead('Liam_legal_to_latlong');
+plssPumping = nan(length(plss), size(PumpElem,1));
+mile = 1609.344;
+noClosure = [];
+for ii = 1:length(plss)
+    ii
+    % Assume that the plss centers correspond to 1sq mi rectangles aligned
+    % with the X, Y coordinates
+    % create rectangle
+    cc = [plss(ii,1).X plss(ii,1).Y];
+    poly = [cc(1) - mile/2 cc(2) - mile/2; cc(1) + mile/2 cc(2) - mile/2; ...
+            cc(1) + mile/2 cc(2) + mile/2; cc(1) - mile/2 cc(2) + mile/2];
+    % sort elements by the distance
+    dst = sqrt((cc(1) - elcc(:,1)).^2 + (cc(2) - elcc(:,2)).^2);
+    [D, I] = sort(dst);
+    cum_area = 0;
+    Qpump = zeros(1,size(PumpElem,1));
+    for jj = 1:length(I)
+        n = 4;
+        if MSH(I(jj),4) == 0; n = 3; end
+        polyEl = [p(MSH(I(jj),1:n),1) p(MSH(I(jj),1:n),2)];
+        [bx, by] = polybool('&',poly(:,1), poly(:,2),polyEl(:,1), polyEl(:,2));
+        if ~isempty(bx)
+            a = polyarea(bx, by);
+            Elarea = polyarea(polyEl(:,1), polyEl(:,2));
+            Qpump = Qpump + (a/Elarea).*PumpElem(:,I(jj))';
+            cum_area = cum_area + a;
+        end
+        if abs(cum_area - mile^2) < 0.1
+            plssPumping(ii,:) = Qpump;
+            break
+        end
+        if jj > 20
+            noClosure = [noClosure;ii cum_area];
+            break
+        end
+    end
+end
 
