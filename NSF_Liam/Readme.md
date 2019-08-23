@@ -16,3 +16,8 @@ where ```CODE``` is the field CO_MTRS
 ```H1 H2 ... H505``` are the head monthly values in feet from 9/30/1973 to 9/30/2015.
 
 There are some points with nan values. These are located outside of the C2Vsim mesh.
+
+Pumping
+-------
+The second code snippet from the  **ExtractDataLiam.m** script is used to extract pumping.
+The results are in the **PumpingPLSSLiam.dat** file. THe format of the file is identical to the previous except that the units are ft^3 and the starting date is 10/31/1973 

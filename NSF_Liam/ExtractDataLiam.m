@@ -1,4 +1,4 @@
-%{
+%
 %% Groundwater levels
 % For the groundwater levels use the following line to read the HeadAll.out
 % file. The name of this file is specified under the
@@ -63,10 +63,20 @@ fclose(fid);
 %}
 %% Groundwater Pumping
 GBinfo = h5info('..\C2VSimFG-BETA_PublicRelease\Results\C2VSimFG_GW_ZBudget.hdf');
-PumpElem = h5read(GBinfo.Filename, ...
-    [GBinfo.Groups(2).Name GBinfo.Name GBinfo.Groups(2).Datasets(13).Name])';
-PumpWell = h5read(GBinfo.Filename, ...
-    [GBinfo.Groups(2).Name GBinfo.Name GBinfo.Groups(2).Datasets(14).Name])';
+IWFM_DatasetNames = h5read(GBinfo.Filename, ...
+    [GBinfo.Groups(1).Name GBinfo.Name GBinfo.Groups(1).Datasets(5).Name]);
+for ii = 1:4
+    IWFMelemIDS{ii,1} = double(h5read(GBinfo.Filename, ...
+        [GBinfo.Groups(1).Name GBinfo.Name GBinfo.Groups(1).Datasets(5+ii).Name]));
+end
+PumpElemCol = 20;
+PumpWellCol = 22;
+for ii = 1:4
+    PumpElem{ii,1} = h5read(GBinfo.Filename, ...
+        [GBinfo.Groups(ii+1).Name GBinfo.Name GBinfo.Groups(ii+1).Datasets(13).Name])';
+    PumpWell{ii,1} = h5read(GBinfo.Filename, ...
+        [GBinfo.Groups(ii+1).Name GBinfo.Name GBinfo.Groups(ii+1).Datasets(14).Name])';
+end
 
 ND = shaperead('..\gis_data\C2Vsim_Nodes');
 p = [[ND.X]',[ND.Y]'];
@@ -80,11 +90,13 @@ for ii = 1:size(MSH,1)
     end
     elcc(ii,:) = [mean(p(MSH(ii,1:n),1)) mean(p(MSH(ii,1:n),2))];
 end
+load('..\..\mat_data\C2VsimWells');
 
 plss = shaperead('Liam_legal_to_latlong');
-plssPumping = nan(length(plss), size(PumpElem,1));
+plssPumping = nan(length(plss), size(PumpElem{1,1},1));
 mile = 1609.344;
 noClosure = [];
+thereAreWells = [];
 for ii = 1:length(plss)
     ii
     % Assume that the plss centers correspond to 1sq mi rectangles aligned
@@ -97,16 +109,22 @@ for ii = 1:length(plss)
     dst = sqrt((cc(1) - elcc(:,1)).^2 + (cc(2) - elcc(:,2)).^2);
     [D, I] = sort(dst);
     cum_area = 0;
-    Qpump = zeros(1,size(PumpElem,1));
+    Qpump = zeros(1,size(PumpElem{1,1},1));
     for jj = 1:length(I)
         n = 4;
         if MSH(I(jj),4) == 0; n = 3; end
         polyEl = [p(MSH(I(jj),1:n),1) p(MSH(I(jj),1:n),2)];
-        [bx, by] = polybool('&',poly(:,1), poly(:,2),polyEl(:,1), polyEl(:,2));
+        [bx, by] = polybool('&',poly(:,1), poly(:,2), polyEl(:,1), polyEl(:,2));
         if ~isempty(bx)
             a = polyarea(bx, by);
             Elarea = polyarea(polyEl(:,1), polyEl(:,2));
-            Qpump = Qpump + (a/Elarea).*PumpElem(:,I(jj))';
+            for kk = 1:4
+                lay_el_id = find(IWFMelemIDS{kk,1}(:,PumpElemCol)~=0);
+                rowid = find(lay_el_id == I(jj) );
+                if ~isempty(rowid)
+                    Qpump = Qpump + (a/Elarea).*PumpElem{kk,1}(:,rowid)';
+                end
+            end
             cum_area = cum_area + a;
         end
         if abs(cum_area - mile^2) < 0.1
@@ -118,5 +136,23 @@ for ii = 1:length(plss)
             break
         end
     end
+    
+    % Check if any iwfm well is inside the poly
+    inwell = inpolygon(iwfmwells(:,2), iwfmwells(:,3), poly(:,1), poly(:,2));
+    well_id = find(inwell);
+    if isempty(well_id)
+        thereAreWells = [thereAreWells;well_id];
+    end
 end
+%% Write Pumping to ascii format
+frmt = '%s';
+for ii = 1:size(plssPumping,2) + 4
+    frmt = [frmt ' %.3f'];
+end
+frmt = [frmt '\n'];
 
+fid = fopen('PumpingPLSSLiam.dat', 'w');
+for ii = 1:size(plssPumping,1)
+    fprintf(fid, frmt, plss(ii,1).CO_MTRS, [plss(ii,1).X1 plss(ii,1).Y1 plss(ii,1).X plss(ii,1).Y plssPumping(ii,:)]);
+end
+fclose(fid);
