@@ -17,7 +17,31 @@ where ```CODE``` is the field CO_MTRS
 
 There are some points with nan values. These are located outside of the C2Vsim mesh.
 
-Pumping
+Groundwater Pumping
 -------
 The second code snippet from the  **ExtractDataLiam.m** script is used to extract pumping.
 The results are in the **PumpingPLSSLiam.dat** file. THe format of the file is identical to the previous except that the units are ft^3 and the starting date is 10/31/1973 
+
+Agricultural and Urban Deliveries
+--------------------
+These deliveries in C2VSim are split into 4 categories
+ - Non Ponded crops
+ - Refuge
+ - Rice
+ - Urban
+
+ For each category there are three files with suffix _Area.dat_, _Deliv.dat_ and _Pump.dat_ Which correspond to the area (sq ft) that the category is covering, the delivery and Pumping amounts (cu ft). 
+
+**Important Note:**
+For the groundwater pumping, Agricultural and Urban Deliveries the zero values can be due to the fact that the plss are outside the C2VSim domain, while for water levels the plss nodes outside the modeling domain get nan values.
+
+Calculation procedure
+----
+We assume that the plss correspond to square mile rectangular center.
+
+Therefore first we construct the rectangular and then we identify the intesecting elements.
+
+![alt text][exampleAverage.png]
+
+For each element we multiply the C2Vsim timeseries wit hthe ratio of intersected area/ element area. Then we sum all the weighted averaged timeseries
+
