@@ -43,5 +43,6 @@ Therefore first we construct the rectangular and then we identify the intesectin
 
 ![alt text](exampleAverage.png)
 
-For each element we multiply the C2Vsim timeseries wit hthe ratio of intersected area/ element area. Then we sum all the weighted averaged timeseries
+For each element we multiply the C2Vsim timeseries with the ratio of intersected area/element area. Then we sum  the weighted averaged timeseries for each square.
+
 
