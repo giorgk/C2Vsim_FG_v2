@@ -41,7 +41,7 @@ We assume that the plss correspond to square mile rectangular center.
 
 Therefore first we construct the rectangular and then we identify the intesecting elements.
 
-![alt text][exampleAverage.png]
+![alt text](exampleAverage.png)
 
 For each element we multiply the C2Vsim timeseries wit hthe ratio of intersected area/ element area. Then we sum all the weighted averaged timeseries
 
