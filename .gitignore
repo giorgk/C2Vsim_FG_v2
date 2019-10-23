@@ -23,3 +23,8 @@
 !/NSF_Liam
 /NSF_Liam/*.asv
 /NSF_Liam/.Rhistory
+# add the beta2 version released May 2019
+!/C2VSim_Beta2
+/C2VSim_Beta2/*
+!/C2VSim_Beta2/*.m
+!/C2VSim_Beta2/gis_data
