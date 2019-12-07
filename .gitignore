@@ -28,3 +28,16 @@
 /C2VSim_Beta2/*
 !/C2VSim_Beta2/*.m
 !/C2VSim_Beta2/gis_data
+# add the NPSAT folder
+!/NPSAT
+/NPSAT/*
+!/NPSAT/*.md
+!/NPSAT/*.m
+!/NPSAT/*.R
+!/NPSAT/*.Rproj
+!/NPSAT/*.obj
+!/NPSAT/*.hipnc
+# input files folder
+!/NPSAT/inputfiles
+/NPSAT/inputfiles/*
+!/NPSAT/inputfiles/*.npsat
