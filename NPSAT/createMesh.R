@@ -9,7 +9,7 @@ MSH <- c2vsim.readMesh(filename = "../c2vsimfg_beta2_publicrelease/C2VSimFG_BETA
                        NE = 32537, Nskip = 142,Ncols = 6)
 
 # Write obj file
-npsat.writeMesh2obj(filename = "temp.obj",XY = cbind(XY[,-1],0),MSH = MSH[,c(-1,-6)])
+npsat.writeMesh2obj(filename = "C2VsimMesh.obj", XY = cbind(XY[,-1],0),MSH = MSH[,c(-1,-6)])
 # The temp.obj file was converted to quadrilateral mesh in Zbrush (THis is the C2VSIM_16K.OBJ)
 # Next the quadrilateral mesh was edited in Houdini to modify the remaining triangle elements.
 # The final quadrilateral only mesh is the InputMesh_Modif.obj.

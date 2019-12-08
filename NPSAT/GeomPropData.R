@@ -78,13 +78,18 @@ pMSH_exp <- npsat.readOBJmesh("pMeshExpanded.obj")
 
 # Interpolate the Parametric Values of Hydraulic conductivity to the actual elevation nodes
 HK_Layer <- matrix(data = NA, nrow = dim(ExpandedMesh[[1]])[1], ncol = 4)
+POR_Layer <- matrix(data = NA, nrow = dim(ExpandedMesh[[1]])[1], ncol = 4)
 for (i in 1:4) {
   # first interpolate the parametric grid to the actual mesh
    temp <- interpp(x = PXY[,1], y = PXY[,2], z = PKH[,i], linear = FALSE, extrap = TRUE, duplicate = "mean", 
                     xo = XY$X, yo = XY$Y)[[3]]
+   tempPOR <- interpp(x = PXY[,1], y = PXY[,2], z = PN[,i], linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                   xo = XY$X, yo = XY$Y)[[3]]
    
   # Then extrapolate to the expanded grid
   HK_Layer[,i] <- interpp(x = XY$X, y = XY$Y, z = temp, linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                          xo = ExpandedMesh[[1]][,1], yo = ExpandedMesh[[1]][,2])[[3]]
+  POR_Layer[,i] <- interpp(x = XY$X, y = XY$Y, z = tempPOR, linear = FALSE, extrap = TRUE, duplicate = "mean", 
                           xo = ExpandedMesh[[1]][,1], yo = ExpandedMesh[[1]][,2])[[3]]
 }
 
@@ -97,10 +102,57 @@ for (i in 1:3) {
 }
 
 tmpHK <- cbind(ExpandedMesh[[1]][,1:2], HK_Layer[,1])
+tmpPOR <- cbind(ExpandedMesh[[1]][,1:2], POR_Layer[,1])
 for (i in 1:3) {
   tmpHK <- cbind(tmpHK, ElevLay[,i], HK_Layer[,i+1])
+  tmpPOR <- cbind(tmpPOR, ElevLay[,i], POR_Layer[,i+1])
 }
 
 npsat.input.WriteScattered(filename = "inputfiles/HK.npsat",PDIM = 2, TYPE = "FULL", MODE = "STRATIFIED", DATA = tmpHK)
+npsat.input.WriteScattered(filename = "inputfiles/POR.npsat",PDIM = 2, TYPE = "FULL", MODE = "STRATIFIED", DATA = tmpPOR)
+
+
+# For the vertical hydraulic conductivity we will include the aquitard values therefore there will be 8 layers of vertical interpolation
+VK_Layer <- matrix(data = NA, nrow = dim(ExpandedMesh[[1]])[1], ncol = 8)
+for (i in 1:4) {
+  # Interpolate the VK values on to actual mesh grid
+  # First for the aquicludes
+  tempV <- interpp(x = PXY[,1], y = PXY[,2], z = PV[,i], linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                  xo = XY$X, yo = XY$Y)[[3]]
+  # and for the aquifer
+  tempL <- interpp(x = PXY[,1], y = PXY[,2], z = PL[,i], linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                   xo = XY$X, yo = XY$Y)[[3]]
+  
+  # Next we interpolate the values on the the expanded mesh
+  VK_Layer[, 2*i-1] <- interpp(x = XY$X, y = XY$Y, z = tempV, linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                          xo = ExpandedMesh[[1]][,1], yo = ExpandedMesh[[1]][,2])[[3]]
+  VK_Layer[, 2*i] <- interpp(x = XY$X, y = XY$Y, z = tempL, linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                               xo = ExpandedMesh[[1]][,1], yo = ExpandedMesh[[1]][,2])[[3]]
+}
+
+# Calculate the elevations between the layers
+ElevLayV <- matrix(data = NA, nrow = dim(ExpandedMesh[[1]])[1], ncol = dim(VK_Layer)[2]-1)
+layDepth <- matrix(data = NA, nrow = dim(ExpandedMesh[[1]])[1], ncol = 7)
+for (i in 1:7) {
+  layDepth[,i] <- interpp(x = XY$X, y = XY$Y, z = CVstrat[,i+2]* c2vsim.units.ft2m(), 
+                          linear = FALSE, extrap = TRUE, duplicate = "mean", 
+                          xo = ExpandedMesh[[1]][,1], yo = ExpandedMesh[[1]][,2])[[3]]
+}
+# add a tiny depth to the zero depth layers
+tt <- layDepth
+tt[which(tt<0.001)] = 0.001
+
+ElevLayV[,1] <- TOP[[3]] - tt[,1]
+for (i in 2:dim(ElevLayV)[2]) {
+  ElevLayV[,i] <- TOP[[3]] - apply(tt[,1:i],1,sum)
+}
+
+tmpVK <- cbind(ExpandedMesh[[1]][,1:2], VK_Layer[,1])
+for (i in 1:7) {
+  tmpVK <- cbind(tmpVK, ElevLayV[,i], VK_Layer[,i+1])
+}
+# Since only the second layer has aquiclude depth we will remove the aquicludes on all other layers on the printed file
+npsat.input.WriteScattered(filename = "inputfiles/VK.npsat",PDIM = 2, TYPE = "FULL", MODE = "STRATIFIED", DATA = tmpVK[,c(-3,-4, -11, -12, -15,-16)])
+
 
 
