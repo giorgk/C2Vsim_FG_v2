@@ -6,7 +6,7 @@ source("npsat_functions.R")
 XY <- c2vsim.readNodes(filename = "../c2vsimfg_beta2_publicrelease/C2VSimFG_BETA2_PublicRelease/Preprocessor/C2VSimFG_Nodes.dat", ND = 30179, Nskip = 90)
 # Read the mesh
 MSH <- c2vsim.readMesh(filename = "../c2vsimfg_beta2_publicrelease/C2VSimFG_BETA2_PublicRelease/Preprocessor/C2VSimFG_Elements.dat",
-                       NE = 32537, Nskip = 142,Ncols = 6)
+                       NE = 32537, Nskip = 142, Ncols = 6)
 
 # Write obj file
 npsat.writeMesh2obj(filename = "C2VsimMesh.obj", XY = cbind(XY[,-1],0),MSH = MSH[,c(-1,-6)])

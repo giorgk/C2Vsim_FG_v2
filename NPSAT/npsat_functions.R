@@ -77,3 +77,41 @@ npsat.input.WriteScattered <- function(filename, PDIM, TYPE, MODE, DATA){
   write(paste(dim(DATA)[1], Ndata), file = filename, append = TRUE)
   write.table(DATA, file = filename, sep = " ", row.names = FALSE, col.names = FALSE, quote = FALSE, append = TRUE)
 }
+
+
+#' npsat.Input.readScattered reads the scattered format files
+#'
+#' @param filename is the name of the file
+#' @param PDIM is the dimention of the point. Valid options are 2 for 2D points or 1 for 1D points
+#'
+#' @return a data frame with the X Y Values
+#' @export
+#'
+#' @examples
+npsat.Input.readScattered <- function(filename, PDIM = 2){
+  # Read header
+  tmp <- readLines(filename, n = 4)
+  N <- as.numeric(strsplit(tmp[4], " ")[[1]])
+  if (PDIM == 1){
+    cnames <- c("X")
+  }
+  else if (PDIM == 2){
+    cnames <- c("X", "Y")
+  }
+  if(N[2] == 3){
+    cnames <- c(cnames, "V")
+  }
+  else if (N[2] > 3){
+    cnames <- c(cnames, "V1")
+    for (i in seq(1, (N[2]-1)/2, 1)) {
+      cnames <- c(cnames, paste0("Z", i), paste0("V", i+1))
+    }
+    
+  }
+  DATA <- read.table(file = filename,
+             header = FALSE, sep = "", skip = 4, nrows = N[1],
+             quote = "",fill = TRUE,
+             col.names = cnames)
+  
+  return(DATA)
+}
