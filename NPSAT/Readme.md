@@ -10,6 +10,6 @@ First download the C2Vsim model from [here](https://data.cnra.ca.gov/dataset/c2v
 3. Run the budget
 
 #### Geometry and property files
-* Mesh input file. This is the file wit hthe initial mesh. The generation of  quadrilateral mesh is a rather complicated issue and the options for generating good quality quadrilateral meshes are quite limited ([Gmsh](http://gmsh.info/) which is free but difficult to get the desired result, [cubit](https://cubit.sandia.gov/) which results in rather good quality mesh, bit it's not free to everyone). Our approach is to print the original mesh as [obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) file and then use a standard remesher tool from 3D industry [exoside](https://exoside.com/).
+* Mesh input file. This is the file with the initial mesh. The generation of  quadrilateral mesh is a rather complicated issue and the options for generating good quality quadrilateral meshes are quite limited ([Gmsh](http://gmsh.info/) which is free but difficult to get the desired result, [cubit](https://cubit.sandia.gov/) which results in rather good quality mesh, bit it's not free to everyone). Our approach is to print the original mesh as [obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) file and then use a standard remesher tool from 3D industry [exoside](https://exoside.com/).
 
 

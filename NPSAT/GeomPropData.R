@@ -1,5 +1,5 @@
 library("akima")
-source("../../C2VsimCG/Rwrkspc/c2vsim_io.R")
+source("../../../C2VsimCG/Rwrkspc/c2vsim_io.R")
 source("npsat_functions.R")
 # Prepare Input file for bottom and Top -------------------------------------------
 # However the top is not going to be used in the simulation.
