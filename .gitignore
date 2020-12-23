@@ -41,3 +41,4 @@
 !/NPSAT/inputfiles
 /NPSAT/inputfiles/*
 !/NPSAT/inputfiles/*.npsat
+.Rproj.user

@@ -207,3 +207,17 @@ p1 <- p %>%
          yaxis = list(title = "Percentage of grid cells [%]", titlefont = list(size = 18)), 
          showlegend = FALSE)
 p1
+
+
+##### Calculate STORAGE -----------
+### PUMPING 
+c2vsim_storage_ARR <- array(data = 0, dim = c(32537, 504))
+for (i in 1:4) {
+  tmp <- getDatafromBudget(i, "GW Storage_Inflow (+)")
+  c2vsim_storage_ARR[tmp[[1]],] <- c2vsim_storage_ARR[tmp[[1]],] + tmp[[2]] 
+  tmp <- getDatafromBudget(i, "GW Storage_Outflow (-)")
+  c2vsim_storage_ARR[tmp[[1]],] <- c2vsim_storage_ARR[tmp[[1]],] - tmp[[2]] 
+}
+
+c2vsim_storage_monthly <- apply(c2vsim_storage_ARR,2,sum)
+save(list = c("c2vsim_tm","c2vsim_storage_monthly"), file = "C2VSIM_STORAGE_TS.RData")
